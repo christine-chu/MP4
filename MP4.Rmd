@@ -14,5 +14,25 @@ install.packages("mdsr")
 install.packages("RMySQL")
 library(mdsr)
 library(RMySQL)
+```
+
+Database for Querying 
+```{r}
 db <- dbConnect_scidb(dbname = "imdb")
 ```
+
+
+# Individual chunks to prevent overwriting of code.
+Christine 
+```{r}
+db %>% 
+  dbGetQuery("SELECT *			
+FROM #table
+WHERE #condition )
+```
+
+Nybria 
+
+
+
+Julia 
