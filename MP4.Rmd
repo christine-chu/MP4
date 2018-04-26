@@ -26,12 +26,23 @@ db <- dbConnect_scidb(dbname = "imdb")
 Christine 
 ```{r}
 db %>% 
-  dbGetQuery("SELECT *			
+  dbGetQuery("SELECT *		
 FROM #table
 WHERE #condition )
 ```
 
 Nybria 
+```{r}
+db <- dbConnect_scidb(dbname = "imdb")
+db %>%
+  dbGetQuery("SELECT * FROM kind_type;")
+
+# we cannot access this data base
+cb <- dbConnect_scidb(dbname = "citibike")
+# we cannot access this data base
+ntaxi <- dbConnect_scidb(dbname = "nyctaxi")
+
+```
 
 
 
