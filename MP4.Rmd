@@ -19,7 +19,7 @@ library(RMySQL)
 Database for Querying 
 #replace quotation with dataset we choose
 ```{r}
-db <- dbConnect_scidb(dbname = "airlines")
+db <- dbConnect_scidb(dbname = "lahman")
 ```
 
 
@@ -27,9 +27,12 @@ db <- dbConnect_scidb(dbname = "airlines")
 Christine 
 ```{r}
 db %>% 
-  dbGetQuery("SELECT *		
-FROM #table
-WHERE #condition )
+  dbGetQuery("SELECT ls.yearID, ls.teamID, lt.franchID, ls.playerID, ls.salary, tf.franchName
+FROM lahman.Salaries ls 
+JOIN lahman.Teams lt ON lt.teamID = ls.teamID
+JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
+ORDER BY salary desc
+;")
 ```
 
 Nybria 
