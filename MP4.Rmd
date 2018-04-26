@@ -17,8 +17,9 @@ library(RMySQL)
 ```
 
 Database for Querying 
+#replace quotation with dataset we choose
 ```{r}
-db <- dbConnect_scidb(dbname = "imdb")
+db <- dbConnect_scidb(dbname = "airlines")
 ```
 
 
