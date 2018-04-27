@@ -26,6 +26,9 @@ db <- dbConnect_scidb(dbname = "lahman")
 # Individual chunks to prevent overwriting of code.
 Christine 
 ```{r}
+# This search query returns us the salaries of the players, team affilation, and the year that they received the salary and orders it from highest to lowest. 
+
+#do you guys think this would be helpful? 
 db %>% 
   dbGetQuery("SELECT ls.yearID, ls.teamID, lt.franchID, ls.playerID, ls.salary, tf.franchName
 FROM lahman.Salaries ls 
