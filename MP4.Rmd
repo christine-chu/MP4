@@ -36,6 +36,17 @@ JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
 ORDER BY salary desc
 ;")
+
+# 
+db2 <- dbConnect_scidb(dbname = "lahman")
+db2 %>% 
+  dbGetQuery("SELECT ls.yearID, ls.teamID, ls.playerID, ls.salary, tf.franchName, hf.inducted
+FROM lahman.Salaries ls 
+JOIN lahman.HallOfFame hf ON hf.playerID = ls.playerID
+JOIN lahman.Teams lt ON lt.teamID = ls.teamID
+JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
+WHERE ls.yearID >= 1936;")
+
 ```
 
 Nybria 
