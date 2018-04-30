@@ -51,6 +51,26 @@ ntaxi <- dbConnect_scidb(dbname = "nyctaxi")
 
 ```
 
+```{r}
+#I am trying to combine two tables the Hall of Fame and Salary, I am trying things out, so I have been having trouble 
+
+dbGetQuery("SELECT hf.playerID, hf.inducted, s.playerID, s.salary
+FROM lahman.HallOfFame hf
+JOIN lahman.Salaries s ON hf.playerID = s.playerID
+ORDER BY s.salary desc;")
+
+
+# combining tables 
+
+dbGetQuery("SELECT s.teamID, s.playerID, lt.teamID, lt.franchID, tf.franchID, tf.franchName, hf.playerID, hf.inducted
+FROM lahman.Salaries
+JOIN lahman.Teams lt ON s.teamID = lt.teamID
+JOIN lahman.TeamsFranchises tf ON  lt.franchID = tf.franchID
+JOIN lahman.HallOfFame hf ON s.playerID = hf.playerID
+WHERE hf.inducted = 'Y'
+AND s.yearID >= 2016;")
+
+```
 
 
 Julia 
