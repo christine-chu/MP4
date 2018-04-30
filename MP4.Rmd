@@ -36,6 +36,9 @@ JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
 ORDER BY salary desc
 ;")
+```
+
+```{r}
 
 # including Hall of Fame status on the salary table, with the names of the teams. 
 db2 <- dbConnect_scidb(dbname = "lahman")
@@ -46,10 +49,13 @@ JOIN lahman.HallOfFame hf ON hf.playerID = ls.playerID
 JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
 WHERE hf.inducted = 'Y'
+#group by 
 ORDER BY ls.salary desc
 ;
 ")
+```
 
+```{r}
 
 #not inducted into the hall of fame 
 db2 %>% 
@@ -59,10 +65,10 @@ JOIN lahman.HallOfFame hf ON hf.playerID = ls.playerID
 JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
 WHERE hf.inducted = 'N'
-GROUP BY playerID  #how come when i gorup it by player ID, some rows disappear??
+GROUP BY playerID  
 ORDER BY ls.salary desc
 ;")
-
+#how come when i group it by player ID, some rows disappear??
 ```
 
 Nybria 
