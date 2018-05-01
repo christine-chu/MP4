@@ -29,13 +29,14 @@ Christine
 # This search query returns us the salaries of the players, team affilation, and the year that they received the salary and orders it from highest to lowest. 
 
 #do you guys think this would be helpful? 
-db %>% 
-  dbGetQuery("SELECT ls.yearID, ls.teamID, lt.franchID, ls.playerID, ls.salary, tf.franchName
+arod <- db %>% 
+  dbGetQuery("SELECT DISTINCT ls.yearID, lt.franchID, ls.playerID, ls.salary, tf.franchName
 FROM lahman.Salaries ls 
 JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
 ORDER BY salary desc
 ;")
+ 
 ```
 
 ```{r}
@@ -114,8 +115,23 @@ FROM lahman.Salaries s
 JOIN lahman.Teams lt ON s.teamID = lt.teamID
 JOIN lahman.TeamsFranchises tf ON  lt.franchID = tf.franchID
 JOIN lahman.HallOfFame hf ON s.playerID = hf.playerID
+WHERE hf.inducted = 'N'
+GROUP BY hf.playerID;
+")
+
+rod_salary <- bball %>%
+  dbGetQuery("SELECT DISTINCT s.teamID, s.playerID, lt.teamID, lt.franchID, tf.franchID, tf.franchName, s.salary, s.yearid
+FROM lahman.Salaries s
+JOIN lahman.Teams lt ON s.teamID = lt.teamID
+JOIN lahman.TeamsFranchises tf ON  lt.franchID = tf.franchID
+WHERE s.playerID = 'rodrial01'
 ;
 ")
+
+rod_line <-ggplot(data = rod_salary, aes(y = salary, x = yearid, color = franchName )) + geom_point()
+
+rod_line 
+
 ```
 
 
