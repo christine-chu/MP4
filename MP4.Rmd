@@ -105,5 +105,19 @@ AND s.yearID >= 2016;")
 
 ```
 
+```{r}
+bball <- dbConnect_scidb(dbname = "lahman")
+
+bball_df <- bball %>%
+  dbGetQuery("SELECT DISTINCT s.teamID, s.playerID, lt.teamID, lt.franchID, tf.franchID, tf.franchName, hf.playerID, hf.inducted, s.salary, s.yearid
+FROM lahman.Salaries s
+JOIN lahman.Teams lt ON s.teamID = lt.teamID
+JOIN lahman.TeamsFranchises tf ON  lt.franchID = tf.franchID
+JOIN lahman.HallOfFame hf ON s.playerID = hf.playerID
+;
+")
+```
+
+
 
 Julia 
