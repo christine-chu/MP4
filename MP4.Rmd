@@ -154,4 +154,9 @@ rod_line
 
 
 
-Julia 
+Julia
+--------------------------------------------------------
+This project would not have been possible without github [^1].
+
+##Links: 
+[^1]: [Link to our GitHub Repositoury](https://github.com/christine-chu/MP4)
