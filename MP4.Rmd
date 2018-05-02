@@ -36,6 +36,16 @@ JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
 ORDER BY salary desc
 ;")
+
+df <- db %>% 
+  dbGetQuery("SELECT ls.yearID, ls.teamID, lt.franchID, ls.playerID, ls.salary, tf.franchName
+FROM lahman.Salaries ls 
+JOIN lahman.Teams lt ON lt.teamID = ls.teamID
+JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
+ORDER BY salary desc
+;")
+
+
 ```
 
 ```{r}
@@ -52,7 +62,7 @@ WHERE hf.inducted = 'Y'
 #group by 
 ORDER BY ls.salary desc
 ;
-")
+") 
 ```
 
 ```{r}
