@@ -116,6 +116,8 @@ AND s.yearID >= 2016;")
 
 ```
 
+
+#FINAL SQL QUERY, Start of plot
 ```{r}
 bball <- dbConnect_scidb(dbname = "lahman")
 
