@@ -36,17 +36,7 @@ JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
 ORDER BY salary desc
 ;")
-
-df <- db %>% 
-  dbGetQuery("SELECT ls.yearID, ls.teamID, lt.franchID, ls.playerID, ls.salary, tf.franchName
-FROM lahman.Salaries ls 
-JOIN lahman.Teams lt ON lt.teamID = ls.teamID
-JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
-ORDER BY salary desc
-;")
-
-
-
+ 
 ```
 
 ```{r}
@@ -63,7 +53,7 @@ WHERE hf.inducted = 'Y'
 #group by 
 ORDER BY ls.salary desc
 ;
-") 
+")
 ```
 
 ```{r}
@@ -116,8 +106,6 @@ AND s.yearID >= 2016;")
 
 ```
 
-
-#FINAL SQL QUERY, Start of plot
 ```{r}
 bball <- dbConnect_scidb(dbname = "lahman")
 
@@ -145,12 +133,6 @@ rod_line <-ggplot(data = rod_salary, aes(y = salary, x = yearid, color = franchN
 rod_line 
 
 ```
-
-
-# hall of fame requirements: 
-- has to be retired 10 years before getting inducted into the hall of fame 
-
-- solution: we can look at the year of inducted and subtract the number of years to look at the salary before they retired. 
 
 
 
