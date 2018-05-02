@@ -147,5 +147,11 @@ rod_line
 ```
 
 
+# hall of fame requirements: 
+- has to be retired 10 years before getting inducted into the hall of fame 
+
+- solution: we can look at the year of inducted and subtract the number of years to look at the salary before they retired. 
+
+
 
 Julia 
