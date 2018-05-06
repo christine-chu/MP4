@@ -36,7 +36,20 @@ JOIN lahman.Teams lt ON lt.teamID = ls.teamID
 JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
 ORDER BY salary desc
 ;")
- 
+----------------(SUNDAY)
+series <- dbConnect_scidb(dbname = "lahman") 
+series_df <- series %>% 
+  dbGetQuery("SELECT DISTINCT ls.yearID, tf.franchName as 'Team_name', lt.teamID, sp.teamIDwinner as 'WinnerID',sp.round, sp.wins
+FROM lahman.Salaries ls 
+#JOIN lahman.HallOfFame hf ON hf.playerID = ls.playerID
+JOIN lahman.Teams lt ON lt.teamID = ls.teamID
+JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
+#join the series post data frame with the year ID to see the winner. 
+JOIN lahman.SeriesPost sp ON ls.yearID = sp.yearID
+WHERE lt.teamID = sp.teamIDwinner
+#WHERE team = SeriesPost.team
+;")
+
 ```
 
 ```{r}
