@@ -26,17 +26,6 @@ db <- dbConnect_scidb(dbname = "lahman")
 # Individual chunks to prevent overwriting of code.
 Christine 
 ```{r}
-# This search query returns us the salaries of the players, team affilation, and the year that they received the salary and orders it from highest to lowest. 
-
-#do you guys think this would be helpful? 
-arod <- db %>% 
-  dbGetQuery("SELECT DISTINCT ls.yearID, lt.franchID, ls.playerID, ls.salary, tf.franchName
-FROM lahman.Salaries ls 
-JOIN lahman.Teams lt ON lt.teamID = ls.teamID
-JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
-ORDER BY salary desc
-;")
-----------------(SUNDAY)
 series <- dbConnect_scidb(dbname = "lahman") 
 series_df <- series %>% 
   dbGetQuery("SELECT DISTINCT ls.yearID, tf.franchName as 'Team_name', lt.teamID, sp.teamIDwinner as 'WinnerID',sp.round, sp.wins
@@ -47,43 +36,16 @@ JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
 #join the series post data frame with the year ID to see the winner. 
 JOIN lahman.SeriesPost sp ON ls.yearID = sp.yearID
 WHERE lt.teamID = sp.teamIDwinner
-#WHERE team = SeriesPost.team
+#WHERE team = SeriesPost.team 
+AND ls.yearID >= 2010
 ;")
 
+
+#Using the world series far did they make it in the world series championship? color it by the type of game, NCSL, WS, etc. 
+
+#National League (NL) Championship Series (NLCS) rior to 1969, the team with the best regular season win-loss record in each league automatically advanced to the World Series; since then each league has conducted a championship series (ALCS and NLCS) preceding the World Series to determine which teams will advance.
 ```
 
-```{r}
-
-# including Hall of Fame status on the salary table, with the names of the teams. 
-db2 <- dbConnect_scidb(dbname = "lahman")
-db2 %>% 
-  dbGetQuery("SELECT ls.yearID, ls.playerID, ls.salary, tf.franchName AS 'Team_name', hf.inducted
-FROM lahman.Salaries ls 
-JOIN lahman.HallOfFame hf ON hf.playerID = ls.playerID
-JOIN lahman.Teams lt ON lt.teamID = ls.teamID
-JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
-WHERE hf.inducted = 'Y'
-#group by 
-ORDER BY ls.salary desc
-;
-")
-```
-
-```{r}
-
-#not inducted into the hall of fame 
-db2 %>% 
-  dbGetQuery("SELECT ls.yearID, ls.playerID, ls.salary, tf.franchName AS 'Team_name', hf.inducted
-FROM lahman.Salaries ls 
-JOIN lahman.HallOfFame hf ON hf.playerID = ls.playerID
-JOIN lahman.Teams lt ON lt.teamID = ls.teamID
-JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
-WHERE hf.inducted = 'N'
-GROUP BY playerID  
-ORDER BY ls.salary desc
-;")
-#how come when i group it by player ID, some rows disappear??
-```
 
 Nybria 
 ```{r}
