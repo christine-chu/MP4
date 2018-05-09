@@ -14,6 +14,7 @@ install.packages("mdsr")
 install.packages("RMySQL")
 library(mdsr)
 library(RMySQL)
+library(scales)
 ```
 
 Database for Querying 
@@ -37,14 +38,38 @@ JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
 JOIN lahman.SeriesPost sp ON ls.yearID = sp.yearID
 WHERE lt.teamID = sp.teamIDwinner
 #WHERE team = SeriesPost.team 
-AND ls.yearID >= 2010
+AND ls.yearID = 2015
 ;")
 
-
-#Using the world series far did they make it in the world series championship? color it by the type of game, NCSL, WS, etc. 
-
-#National League (NL) Championship Series (NLCS) rior to 1969, the team with the best regular season win-loss record in each league automatically advanced to the World Series; since then each league has conducted a championship series (ALCS and NLCS) preceding the World Series to determine which teams will advance.
+series_df
 ```
+
+```{r}
+win_rate <- dbConnect_scidb(dbname = "lahman") 
+win_ratedf <- win_rate %>% 
+  dbGetQuery("SELECT DISTINCT lt.yearID, tf.franchName, W/G as Win_rate
+FROM lahman.Teams lt
+JOIN lahman.Salaries ls ON lt.teamID = ls.teamID
+JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
+WHERE lt.yearID = 2015
+#GROUP BY tf.franchID
+;")
+
+wr_df <- win_ratedf %>% 
+  select(yearID, franchName, Win_rate )
+
+wr_plot <- ggplot(wr_df, aes(franchName, Win_rate)) + geom_bar(stat = "identity")
+
+wr_plot +
+   scale_x_discrete() +
+  scale_y_continuous(expand = c(0, 0), labels = percent, breaks = c(0,0.2, 0.4, 0.6, 0.8, 1), limit = c(0,1)) +
+  ggtitle("Win rate by Franchise") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Franchise Name", y = "Win Rate in 2015")
+
+
+```
+
 
 
 Nybria 
