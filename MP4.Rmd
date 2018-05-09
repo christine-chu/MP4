@@ -6,7 +6,7 @@ output: html_document
 --- 
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 
 library(mdsr)
 library(RMySQL)
@@ -15,14 +15,14 @@ library(scales)
 
 Database for Querying 
 #replace quotation with dataset we choose
-```{r}
+```{r, message=FALSE, warning=FALSE}
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
 
 # Individual chunks to prevent overwriting of code.
 Christine 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 series <- dbConnect_scidb(dbname = "lahman") 
 series_df <- series %>% 
   dbGetQuery("SELECT DISTINCT ls.yearID, tf.franchName as 'Team_name', lt.teamID, sp.teamIDwinner as 'WinnerID',sp.round, sp.wins
@@ -40,7 +40,7 @@ AND ls.yearID = 2015
 series_df
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 win_rate <- dbConnect_scidb(dbname = "lahman") 
 win_ratedf <- win_rate %>% 
   dbGetQuery("SELECT DISTINCT lt.yearID, tf.franchName, W/G as Win_rate
@@ -69,7 +69,7 @@ wr_plot +
 
 
 Nybria 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(knitr)
 bb <- dbConnect_scidb(dbname = "lahman")
 
@@ -80,8 +80,8 @@ FROM lahman.HallOfFame hf
 JOIN lahman.Salaries  s ON hf.playerID = s.playerID 
 JOIN lahman.Teams t ON s.teamID = t.teamID 
 JOIN lahman.TeamsFranchises  tf ON t.franchID = tf.franchID
-WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'Y' GROUP BY s.playerID;
-")
+WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'Y' GROUP BY s.playerID
+ORDER BY s.salary DESC;")
 
 players <- bb %>%
 dbGetQuery("SELECT DISTINCT s.yearID, s.teamID, s.playerID, s.salary, tf.franchID, tf.franchName, tf.active,
@@ -91,12 +91,12 @@ JOIN lahman.Salaries  s ON hf.playerID = s.playerID
 JOIN lahman.Teams t ON s.teamID = t.teamID 
 JOIN lahman.TeamsFranchises  tf ON t.franchID = tf.franchID
 WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'N' 
-GROUP BY hf.playerID;
+ GROUP BY tf.franchName ORDER BY s.salary, name DESC;
 ")
 
 ```
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(knitr)
 library(kableExtra)
