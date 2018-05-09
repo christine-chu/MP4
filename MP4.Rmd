@@ -73,7 +73,8 @@ wr_plot +
 
 
 Nybria 
-```{r}
+```{r results= 'asis'}
+library(knitr)
 bb <- dbConnect_scidb(dbname = "lahman")
 
 fame.players <- bb %>%
@@ -83,7 +84,7 @@ FROM lahman.HallOfFame hf
 JOIN lahman.Salaries  s ON hf.playerID = s.playerID 
 JOIN lahman.Teams t ON s.teamID = t.teamID 
 JOIN lahman.TeamsFranchises  tf ON t.franchID = tf.franchID
-WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'Y';
+WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'Y' GROUP BY s.playerID;
 ")
 
 players <- bb %>%
@@ -93,12 +94,18 @@ FROM lahman.HallOfFame hf
 JOIN lahman.Salaries  s ON hf.playerID = s.playerID 
 JOIN lahman.Teams t ON s.teamID = t.teamID 
 JOIN lahman.TeamsFranchises  tf ON t.franchID = tf.franchID
-WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'N';
+WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'N' 
+GROUP BY hf.playerID;
 ")
 
-ggplot(data = fame.players, aes(x = yearID, y = salary, color = franchName)) + geom_boxplot()
+```
 
-ggplot(data = players, aes(x = yearID, y = salary, color = franchName)) + geom_point()
+```{r echo= FALSE, results= 'asis'}
+library(knitr)
+kable(head(fame.players [,1:6]), format = "markdown", caption = "Hall of Fame Players") 
+
+kable(head(players [,1:6]), format = "markdown", caption = "Hall of Fame Players") 
+
 ```
 
 
