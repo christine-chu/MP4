@@ -100,11 +100,19 @@ GROUP BY hf.playerID;
 
 ```
 
-```{r echo= FALSE, results= 'asis'}
+```{r}
+library(tidyverse)
 library(knitr)
-kable(head(fame.players [,1:6]), format = "markdown", caption = "Hall of Fame Players") 
+library(kableExtra)
 
-kable(head(players [,1:6]), format = "markdown", caption = "Hall of Fame Players") 
+
+kable(head(fame.players[, 1:7]), format = "html", digits = 2, caption = "Hall of Fame: Inducted Players Between 2010-2017") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+
+
+kable(players[, 1:7], format = "html", digits = 2, caption = "Hall of Fame: Non-inducted Players Between 2010-2017") %>%
+  kable_styling(bootstrap_options = "striped", full_width = F)
+
 
 ```
 
