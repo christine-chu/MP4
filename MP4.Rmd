@@ -74,64 +74,31 @@ wr_plot +
 
 Nybria 
 ```{r}
-db <- dbConnect_scidb(dbname = "imdb")
-db %>%
-  dbGetQuery("SELECT * FROM kind_type;")
+bb <- dbConnect_scidb(dbname = "lahman")
 
-# we cannot access this data base
-cb <- dbConnect_scidb(dbname = "citibike")
-# we cannot access this data base
-ntaxi <- dbConnect_scidb(dbname = "nyctaxi")
-
-```
-
-```{r}
-#I am trying to combine two tables the Hall of Fame and Salary, I am trying things out, so I have been having trouble 
-
-dbGetQuery("SELECT hf.playerID, hf.inducted, s.playerID, s.salary
-FROM lahman.HallOfFame hf
-JOIN lahman.Salaries s ON hf.playerID = s.playerID
-ORDER BY s.salary desc;")
-
-
-# combining tables 
-
-dbGetQuery("SELECT s.teamID, s.playerID, lt.teamID, lt.franchID, tf.franchID, tf.franchName, hf.playerID, hf.inducted
-FROM lahman.Salaries
-JOIN lahman.Teams lt ON s.teamID = lt.teamID
-JOIN lahman.TeamsFranchises tf ON  lt.franchID = tf.franchID
-JOIN lahman.HallOfFame hf ON s.playerID = hf.playerID
-WHERE hf.inducted = 'Y'
-AND s.yearID >= 2016;")
-
-```
-
-```{r}
-bball <- dbConnect_scidb(dbname = "lahman")
-
-bball_df <- bball %>%
-  dbGetQuery("SELECT DISTINCT s.teamID, s.playerID, lt.teamID, lt.franchID, tf.franchID, tf.franchName, hf.playerID, hf.inducted, s.salary, s.yearid
-FROM lahman.Salaries s
-JOIN lahman.Teams lt ON s.teamID = lt.teamID
-JOIN lahman.TeamsFranchises tf ON  lt.franchID = tf.franchID
-JOIN lahman.HallOfFame hf ON s.playerID = hf.playerID
-WHERE hf.inducted = 'N'
-GROUP BY hf.playerID;
+fame.players <- bb %>%
+dbGetQuery("SELECT DISTINCT s.yearID, s.teamID, s.playerID, s.salary, tf.franchID, tf.franchName, tf.active,
+t.teamID, t.franchID, hf.playerID, hf.inducted, hf.category, t.rank
+FROM lahman.HallOfFame hf 
+JOIN lahman.Salaries  s ON hf.playerID = s.playerID 
+JOIN lahman.Teams t ON s.teamID = t.teamID 
+JOIN lahman.TeamsFranchises  tf ON t.franchID = tf.franchID
+WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'Y';
 ")
 
-rod_salary <- bball %>%
-  dbGetQuery("SELECT DISTINCT s.teamID, s.playerID, lt.teamID, lt.franchID, tf.franchID, tf.franchName, s.salary, s.yearid
-FROM lahman.Salaries s
-JOIN lahman.Teams lt ON s.teamID = lt.teamID
-JOIN lahman.TeamsFranchises tf ON  lt.franchID = tf.franchID
-WHERE s.playerID = 'rodrial01'
-;
+players <- bb %>%
+dbGetQuery("SELECT DISTINCT s.yearID, s.teamID, s.playerID, s.salary, tf.franchID, tf.franchName, tf.active,
+t.teamID, t.franchID, hf.playerID, hf.inducted, hf.category, t.rank
+FROM lahman.HallOfFame hf 
+JOIN lahman.Salaries  s ON hf.playerID = s.playerID 
+JOIN lahman.Teams t ON s.teamID = t.teamID 
+JOIN lahman.TeamsFranchises  tf ON t.franchID = tf.franchID
+WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'N';
 ")
 
-rod_line <-ggplot(data = rod_salary, aes(y = salary, x = yearid, color = franchName )) + geom_point()
+ggplot(data = fame.players, aes(x = yearID, y = salary, color = franchName)) + geom_boxplot()
 
-rod_line 
-
+ggplot(data = players, aes(x = yearID, y = salary, color = franchName)) + geom_point()
 ```
 
 
