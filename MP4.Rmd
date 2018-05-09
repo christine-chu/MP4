@@ -7,8 +7,7 @@ output: html_document
 
 
 ```{r}
-install.packages("mdsr")
-install.packages("RMySQL")
+
 library(mdsr)
 library(RMySQL)
 library(scales)
