@@ -70,7 +70,6 @@ wr_plot +
 
 Nybria 
 ```{r, message=FALSE, warning=FALSE}
-library(knitr)
 bb <- dbConnect_scidb(dbname = "lahman")
 
 fame.players <- bb %>%
