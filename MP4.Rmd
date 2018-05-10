@@ -57,17 +57,18 @@ WHERE lt.yearID = 2015
 wr_df <- win_ratedf %>% 
   select(yearID, franchName, Win_rate )
 
-wr_plot <- ggplot(wr_df, aes(franchName, Win_rate)) + geom_bar(stat = "identity")
+wr_plot <- ggplot(wr_df, aes(franchName, Win_rate)) + geom_bar(stat = "identity", fill = "Green")
 
 wr_plot +
    scale_x_discrete() +
   scale_y_continuous(expand = c(0, 0), labels = percent, breaks = c(0,0.2, 0.4, 0.6, 0.8, 1), limit = c(0,1)) +
-  ggtitle("Win rate by Franchise") + 
+  ggtitle("Winning rate by Franchise") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Franchise Name", y = "Win Rate in 2015")
+  labs(x = "Franchise Name", y = "Winning Rate in 2015")
 
 
 ```
+
 
 
 
@@ -118,6 +119,43 @@ kable(players[, 1:7], format = "html", digits = 2, caption = "Hall of Fame: Non-
 
 
 Julia
+```{r}
+db <- dbConnect_scidb(dbname = "lahman")
+
+cow <- db %>% 
+  dbGetQuery("SELECT DISTINCT ls.yearID, lt.Rank, lt.franchID, ls.playerID, ls.salary, tf.franchName
+FROM lahman.Salaries ls 
+JOIN lahman.Teams lt ON lt.teamID = ls.teamID
+JOIN TeamsFranchises tf ON lt.franchID = tf.franchID
+WHERE lt.yearID > 2010
+GROUP BY playerID
+ORDER BY Salary desc
+
+;")
+
+cow2 <- cow %>%
+  select(Rank, franchName, salary, yearID)
+
+
+cow3 <- cow2 %>%
+  group_by(franchName) %>%
+  mutate(avgsal = mean(salary))
+
+
+
+library(ggthemes)
+cowplot <- ggplot(cow3, aes(x=franchName, y=avgsal, col=Rank)) +
+  geom_point() 
+
+cowplot +
+  geom_point(shape = 21) +
+  scale_x_discrete() +
+  scale_y_continuous() +
+  ggtitle("Average Salary by Franchise") + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(x = "Franchise Name", y = "Average Salary 2013-2018")
+```
+
 --------------------------------------------------------
 This project would not have been possible without github [^1].
 
