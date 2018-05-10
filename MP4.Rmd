@@ -91,7 +91,7 @@ wr_df <- win_ratedf %>%
 
 wr_plot <- ggplot(wr_df, aes(franchName, Win_rate)) + geom_bar(stat = "identity", fill = "Green")
 
-wr_plot +s
+wr_plot +
    scale_x_discrete() +
   scale_y_continuous(expand = c(0, 0), labels = percent, breaks = c(0,0.2, 0.4, 0.6, 0.8, 1), limit = c(0,1)) +
   ggtitle("Winning rate by Franchise") + 
