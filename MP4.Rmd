@@ -9,7 +9,7 @@ output:
 What determines player salary? How does a team's ranking in their division, the winning rate from the games they played, and hall of fame history by franchise affect salary? How does each teams game performance affect rankings and hall of fame status?
 (include either tables or graphs you make)
 
-
+hello
 ```{r, message=FALSE, warning=FALSE}
 
 library(mdsr)
