@@ -1,9 +1,13 @@
 ---
-title: "MP4"
-author: "Christine Chu"
-date: "April 25, 2018"
-output: html_document
+title: "Don’t be Fooled by a Team’s Salary: Do MLB Payrolls Matter?"
+author: "Nybria Acklin, Julia Bouzaher, Christine Chu"
+date: "May 9, 2018"
+output: 
+  html_document:
+    code_folding: hide
 --- 
+What determines player salary? How does a team's ranking in their division, the winning rate from the games they played, and hall of fame history by franchise affect salary? How does each teams game performance affect rankings and hall of fame status?
+(include either tables or graphs you make)
 
 
 ```{r, message=FALSE, warning=FALSE}
@@ -13,15 +17,14 @@ library(RMySQL)
 library(scales)
 ```
 
-Database for Querying 
-#replace quotation with dataset we choose
+
 ```{r, message=FALSE, warning=FALSE}
 db <- dbConnect_scidb(dbname = "lahman")
 ```
 
 
-# Individual chunks to prevent overwriting of code.
 Christine 
+
 ```{r, message=FALSE, warning=FALSE}
 series <- dbConnect_scidb(dbname = "lahman") 
 series_df <- series %>% 
@@ -70,6 +73,7 @@ wr_plot +
 
 
 Nybria 
+
 ```{r, message=FALSE, warning=FALSE}
 bb <- dbConnect_scidb(dbname = "lahman")
 
