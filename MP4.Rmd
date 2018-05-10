@@ -92,7 +92,7 @@ JOIN lahman.Teams t ON s.teamID = t.teamID
 JOIN lahman.TeamsFranchises  tf ON t.franchID = tf.franchID
 WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.inducted = 'N' 
  GROUP BY tf.franchName ORDER BY s.salary, name DESC;
-")
+")   
 
 ```
 
