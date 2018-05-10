@@ -6,73 +6,29 @@ output:
   html_document:
     code_folding: hide
 --- 
-What determines player salary? How does a team's ranking in their division, the winning rate from the games they played, and hall of fame history by franchise affect salary? How does each teams game performance affect rankings and hall of fame status?
-(include either tables or graphs you make)
+### Introduction: 
+What determines player salary? How does a team's ranking in their division, the winning rate from the games they played, and hall of fame history by franchise affect salary? How does each teams game performance affect rankings and hall of fame status? 
+For our project we used ‘lahman’ data. It is a data set with a compilation of seasonal Major League Baseball data from 1871 to 2017. There are approximately 28 tables tables that include information on ‘Batting’, ‘HallOfFame’, ‘Salaries’, ‘Teams’, and ‘TeamsFranchise’.
 
-
+Some of the most well known players through history such as Babe Ruth and Jackie Robinson have been induced into the Hall of Fame in the 1930s and 1960s respectively. Although our target year of analysis is 2010 to 2016. We used these players as tests to see what franchises they were part of and if their salaries were fairly high. Unfortunately this did not not work out because salary information in the lahman data set only dates from 1985 to 2016. From this failure another question emerged: which franchises induct the most Hall of Fame players?
 ```{r, message=FALSE, warning=FALSE}
 
 library(mdsr)
 library(RMySQL)
 library(scales)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
 ```
 
 
 ```{r, message=FALSE, warning=FALSE}
 db <- dbConnect_scidb(dbname = "lahman")
 ```
+###Our First Approach: Hall of Fame and Salary
 
-
-Christine 
-
-```{r, message=FALSE, warning=FALSE}
-series <- dbConnect_scidb(dbname = "lahman") 
-series_df <- series %>% 
-  dbGetQuery("SELECT DISTINCT ls.yearID, tf.franchName as 'Team_name', lt.teamID, sp.teamIDwinner as 'WinnerID',sp.round, sp.wins
-FROM lahman.Salaries ls 
-#JOIN lahman.HallOfFame hf ON hf.playerID = ls.playerID
-JOIN lahman.Teams lt ON lt.teamID = ls.teamID
-JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
-#join the series post data frame with the year ID to see the winner. 
-JOIN lahman.SeriesPost sp ON ls.yearID = sp.yearID
-WHERE lt.teamID = sp.teamIDwinner
-#WHERE team = SeriesPost.team 
-AND ls.yearID = 2015
-;")
-
-series_df
-```
-
-```{r, message=FALSE, warning=FALSE}
-win_rate <- dbConnect_scidb(dbname = "lahman") 
-win_ratedf <- win_rate %>% 
-  dbGetQuery("SELECT DISTINCT lt.yearID, tf.franchName, W/G as Win_rate
-FROM lahman.Teams lt
-JOIN lahman.Salaries ls ON lt.teamID = ls.teamID
-JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
-WHERE lt.yearID = 2015
-#GROUP BY tf.franchID
-;")
-
-wr_df <- win_ratedf %>% 
-  select(yearID, franchName, Win_rate )
-
-wr_plot <- ggplot(wr_df, aes(franchName, Win_rate)) + geom_bar(stat = "identity", fill = "Green")
-
-wr_plot +
-   scale_x_discrete() +
-  scale_y_continuous(expand = c(0, 0), labels = percent, breaks = c(0,0.2, 0.4, 0.6, 0.8, 1), limit = c(0,1)) +
-  ggtitle("Winning rate by Franchise") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(x = "Franchise Name", y = "Winning Rate in 2015")
-
-
-```
-
-
-
-
-Nybria 
+First hypothesis was to find a correlation between salary and hall of fame induction. Our first task was to evaluate the baseball player with the highest salary in the data set. We found that player was not yet inducted into the hall of fame. With further research we learned there were specific requirements needed to be met for induction. Baseball players need to have played in 10 seasons. Players also need to be retired for either 5 seasons or six months past their 65th birthday. If the player dies within the 5 season limit then they are eligible to be voted into the Hall of Fame six months after their death [^1]. Other criteria include players need to have achieved 500 home runs, 3000 hits, and 300 game wins. These requirements however does not guarantee induction in the Hall of Fame. Players are not just judged on their ability, but also on character, integrity and sportsmanship. Because election odds are 70 to 1 Hall of Fame induction is a rare achievement [^2].
 
 ```{r, message=FALSE, warning=FALSE}
 bb <- dbConnect_scidb(dbname = "lahman")
@@ -99,12 +55,9 @@ WHERE hf.category = 'Player' AND s.yearID >= 2010 AND tf.active = 'Y' AND hf.ind
 ")   
 
 ```
+We developed a small data frame titled ‘fame.player’ and ‘players’  that compiles induction, salary data for players that have been eligible to be voted in the Hall of Fame. We found that players only 2 that were inducted between 2010-2016. Franchises included the Washington Nationals and Seattle Mariners and salaries were 2.4 million dollars and 3 million dollars. On the other hand, there were 20 who players between 2010-2016 who were not inducted. Salaries ranged from 400 thousand dollars to 18 million dollars. There is no conclusion that can be made about which teams induct the most Hall of Fame players, and, or whether inducted players are more likely to have the highest salaries. This is likely because we narrowed our target years to only 7, but we still had questions about weather a relationship exists between team franchise and salary. Are there team franchises that have the highest paid players?
 
 ```{r, message=FALSE, warning=FALSE}
-library(tidyverse)
-library(knitr)
-library(kableExtra)
-
 
 kable(head(fame.players[, 1:7]), format = "html", digits = 2, caption = "Hall of Fame: Inducted Players Between 2010-2017") %>%
   kable_styling(bootstrap_options = "striped", full_width = F)
@@ -116,9 +69,38 @@ kable(players[, 1:7], format = "html", digits = 2, caption = "Hall of Fame: Non-
 
 ```
 
+## Does their performance affect their salary? 
+```{r, message=FALSE, warning=FALSE}
+win_rate <- dbConnect_scidb(dbname = "lahman") 
+win_ratedf <- win_rate %>% 
+  dbGetQuery("SELECT DISTINCT lt.yearID, tf.franchName, W/G as Win_rate
+FROM lahman.Teams lt
+JOIN lahman.Salaries ls ON lt.teamID = ls.teamID
+JOIN lahman.TeamsFranchises tf ON tf.franchID = lt.franchID
+WHERE lt.yearID = 2015
+#GROUP BY tf.franchID
+;")
+
+wr_df <- win_ratedf %>% 
+  select(yearID, franchName, Win_rate )
+
+wr_plot <- ggplot(wr_df, aes(franchName, Win_rate)) + geom_bar(stat = "identity", fill = "Green")
+
+wr_plot +
+   scale_x_discrete() +
+  scale_y_continuous(expand = c(0, 0), labels = percent, breaks = c(0,0.2, 0.4, 0.6, 0.8, 1), limit = c(0,1)) +
+  ggtitle("Winning rate by Franchise") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Franchise Name", y = "Winning Rate in 2015")
 
 
-Julia
+```
+Looking at each team’s game performance may lead to a trend between the win percentage and the average salary of each team. The winning rate was calculated by dividing the number of games won over the total games played found in the data table `Teams` in lahman. We hypothesis that one of the factors that affects the salaries of how much each franchise gives to their players on average. 
+
+ 	This dataframe was generated by joining Teams, Salaries, and TeamFranchises in order to have the full name of the franchise and the team statistics. The year 2015 was chosen because we wanted to look at the most recent time frame that would give us a relatively complete set of data. While there is a common perception that a team’s income affects how well they play, there was a recent article from FiveThirtyEight [^3] (recent article from FiveThirtyEight) about the success story of the Houston Astros despite their small-budget payroll. Andrew McCutchen, also known as 2013 National League MVP who supports small-budget teams, states that “Payroll doesn’t mean everything. If that was the case, the Yankees would win every year.” If we look at the data visualization generated above, it is interesting to see that the top performing teams that have over 50% in win rate for games played include: Chicago Clubs, Houston Astros, Kansas City Royals, New York Yankees, Pittsburgh Pirates, St. Louis Cardinals, and Toronto Blue Jays to name a few. Most of the teams listed here have an estimation of 50-60% winning rate. Looking at their ranking in the next plot… 
+
+## Last but not least... Do Rankings Matter? 
+
 ```{r}
 db <- dbConnect_scidb(dbname = "lahman")
 
@@ -160,4 +142,8 @@ cowplot +
 This project would not have been possible without github [^1].
 
 ##Links: 
-[^1]: [Link to our GitHub Repositoury](https://github.com/christine-chu/MP4)
+
+[^1]: [Hall of fame criteria 1](https://www.baseball-reference.com/bullpen/Hall_of_Fame)
+[^2]: [Hall of Fame criteria 2](https://entertainment.howstuffworks.com/baseball-hall-of-fame2.htm)
+[^3]: [FiveThirtyEight](https://fivethirtyeight.com/features/dont-be-fooled-by-baseballs-small-budget-success-stories/)
+[^_]: [Link to our GitHub Repositoury](https://github.com/christine-chu/MP4)
